@@ -1,0 +1,29 @@
+{
+  "name": "jenkins_ci",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage --coverageDirectory=output/coverage/jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zqgu2016/jenkins_ci.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zqgu2016/jenkins_ci/issues"
+  },
+  "homepage": "https://github.com/zqgu2016/jenkins_ci#readme",
+  "devDependencies": {
+    "jest": "^29.4.2"
+  },
+  "jest": {
+    "coverageReporters": [
+      "text",
+      "cobertura"
+    ]
+  }
+}
