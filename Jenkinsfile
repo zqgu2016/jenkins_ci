@@ -1,62 +1,39 @@
-#!/bin/groovy
-pipeline {
-  tools {
-    nodejs 'node:18-alpine'
-  }
-  stages {
-    stage('Startup') {
-      steps {
-        script {
-          sh 'npm install'
-        }
-      }
-    }
-    stage('Test') {
-      steps {
-        script {
-          sh 'npm run test'
-        }
-      }
-      post {
-        always {
-          step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/jest/cobertura-coverage.xml'])
-        }
-      }
-    }
-    stage('Build') {
-      steps {
-        script {
-          sh 'echo buiding'
-        }
-      }
-    }
-    stage('Deploy') {
-      when {
-        expression {
-          currentBuild.result == null || currentBuild.result == 'SUCCESS'
-        }
-      }
-      steps {
-        script {
-          def server = Artifactory.server 'My_Artifactory'
-          uploadArtifact(server)
-        }
-      }
-    }
-  }
-}
-def uploadArtifact(server) {
-  def uploadSpec = """{
-            "files": [
-              {
-                "pattern": "continuous-test-code-coverage-guide*.tgz",
-                "target": "npm-stable/"
+node {
+    docker.image('node:18-alpine').inside {
+        stages {
+          stage('Startup') {
+            steps {
+              script {
+                sh 'npm install'
               }
-           ]
-          }"""
-  server.upload(uploadSpec)
-
-  def buildInfo = Artifactory.newBuildInfo()
-  server.upload spec: uploadSpec, buildInfo: buildInfo
-  server.publishBuildInfo buildInfo
+            }
+          }
+          stage('Test') {
+            steps {
+              script {
+                sh 'npm run test'
+              }
+            }
+            post {
+              always {
+                step([$class: 'CoberturaPublisher', coberturaReportFile: 'output/coverage/jest/cobertura-coverage.xml'])
+              }
+            }
+          }
+          stage('Build') {
+            steps {
+              script {
+                sh 'echo buiding'
+              }
+            }
+          }
+          stage('Deploy') {
+            steps {
+              script {
+                sh 'echo deploying'
+              }
+            }
+          }
+        }
+    }
 }
